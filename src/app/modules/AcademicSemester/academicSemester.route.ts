@@ -1,7 +1,5 @@
 import express from 'express';
-import auth from '../../middlewares/auth';
 import validateRequest from '../../middlewares/validateRequest';
-import { USER_ROLE } from '../User/user.constant';
 import { AcademicSemesterControllers } from './academicSemester.controller';
 import { AcademicSemesterValidations } from './academicSemester.validation';
 
@@ -9,7 +7,6 @@ const router = express.Router();
 
 router.post(
   '/create-academic-semester',
-  auth(USER_ROLE.superAdmin, USER_ROLE.admin),
   validateRequest(
     AcademicSemesterValidations.createAcdemicSemesterValidationSchema,
   ),
@@ -17,34 +14,18 @@ router.post(
 );
 
 router.get(
-  '/:courseId',
-  auth(
-    USER_ROLE.superAdmin,
-    USER_ROLE.admin,
-    USER_ROLE.faculty,
-    USER_ROLE.student,
-  ),
+  '/:semesterId',
   AcademicSemesterControllers.getSingleAcademicSemester,
 );
 
 router.patch(
-  '/:courseId',
-  auth(USER_ROLE.superAdmin, USER_ROLE.admin),
+  '/:semesterId',
   validateRequest(
     AcademicSemesterValidations.updateAcademicSemesterValidationSchema,
   ),
   AcademicSemesterControllers.updateAcademicSemester,
 );
 
-router.get(
-  '/',
-  auth(
-    USER_ROLE.superAdmin,
-    USER_ROLE.admin,
-    USER_ROLE.faculty,
-    USER_ROLE.student,
-  ),
-  AcademicSemesterControllers.getAllAcademicSemesters,
-);
+router.get('/', AcademicSemesterControllers.getAllAcademicSemesters);
 
 export const AcademicSemesterRoutes = router;

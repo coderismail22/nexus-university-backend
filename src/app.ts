@@ -18,11 +18,13 @@ app.use(cors());
 app.use('/api/v1', router);
 
 const test = async (req: Request, res: Response) => {
-  const a = 10;
+  const a = 200;
   res.send(a);
 };
 
-app.get('/', test);
+// app.use("/", (req, res) => {
+//   res.send("Server is running");
+// });
 
 app.use(globalErrorHandler);
 

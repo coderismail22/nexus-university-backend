@@ -4,9 +4,9 @@ import {
   AcademicSemesterName,
   Months,
 } from './academicSemester.constant';
-import { TAcademicSemester } from './academicSemester.interface';
+import { TAcademicSemseter } from './academicSemester.interface';
 
-const acdemicSemesterSchema = new Schema<TAcademicSemester>(
+const acdemicSemesterSchema = new Schema<TAcademicSemseter>(
   {
     name: {
       type: String,
@@ -50,7 +50,8 @@ acdemicSemesterSchema.pre('save', async function (next) {
   next();
 });
 
-export const AcademicSemester = model<TAcademicSemester>(
+
+export const AcademicSemester = model<TAcademicSemseter>(
   'AcademicSemester',
   acdemicSemesterSchema,
 );
@@ -61,6 +62,8 @@ export const AcademicSemester = model<TAcademicSemester>(
 //2030 Autumn => XXX
 //2030 Fall => Created
 
+
+
 // Autumn 01
-// Summer 02
+// Summar 02
 // Fall 03
