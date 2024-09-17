@@ -23,16 +23,7 @@ const getAllCoursesFromDB = async (query: Record<string, unknown>) => {
 };
 
 const getSingleCourseFromDB = async (id: string) => {
-  // const courseQuery = new QueryBuilder(
-  //   Course.find().populate("preRequisiteCourses.course"),
-  //   query,
-  // )
-  //   .search(courseSearchableFields)
-  //   .filter()
-  //   .sort()
-  //   .paginate()
-  //   .fields();
-  const result = Course.findById(id);
+  const result = Course.findById(id).populate("preRequisiteCourses.course");
   return result;
 };
 
