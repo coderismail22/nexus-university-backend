@@ -10,8 +10,8 @@ const createCourseValidationSchema = z.object({
     title: z.string(),
     prefix: z.string(),
     code: z.number(),
-    credits: z.string(),
-    preRequisiteCourses: z.array(preRequisiteCourse),
+    credits: z.number(),
+    preRequisiteCourses: z.array(preRequisiteCourse).optional(), // Optional , Because Some Courses Don't Have Any Prerequisite Course
   }),
 });
 
