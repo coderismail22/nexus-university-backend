@@ -1,16 +1,16 @@
-import httpStatus from 'http-status';
-import catchAsync from '../../utils/catchAsync';
-import sendResponse from '../../utils/sendResponse';
-import { AcademicDepartmentServices } from './academicDepartment.service';
+import httpStatus from "http-status";
+import catchAsync from "../../utils/catchAsync";
+import sendResponse from "../../utils/sendResponse";
+import { AcademicDepartmentServices } from "./academicDepartment.service";
 
-const createAcademicDepartmemt = catchAsync(async (req, res) => {
+const createAcademicDepartment = catchAsync(async (req, res) => {
   const result =
     await AcademicDepartmentServices.createAcademicDepartmentIntoDB(req.body);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Academic department is created succesfully',
+    message: "Academic department is created successfully",
     data: result,
   });
 });
@@ -22,7 +22,7 @@ const getAllAcademicDepartments = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Academic departments are retrieved successfully',
+    message: "Academic departments are retrieved successfully",
     data: result,
   });
 });
@@ -37,12 +37,12 @@ const getSingleAcademicDepartment = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Academic department is retrieved succesfully',
+    message: "Academic department is retrieved succesfully",
     data: result,
   });
 });
 
-const updateAcademicDeartment = catchAsync(async (req, res) => {
+const updateAcademicDepartment = catchAsync(async (req, res) => {
   const { departmentId } = req.params;
   const result =
     await AcademicDepartmentServices.updateAcademicDepartmentIntoDB(
@@ -53,14 +53,14 @@ const updateAcademicDeartment = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Academic department is updated succesfully',
+    message: "Academic department is updated succesfully",
     data: result,
   });
 });
 
 export const AcademicDepartmentControllers = {
-  createAcademicDepartmemt,
+  createAcademicDepartment,
   getAllAcademicDepartments,
   getSingleAcademicDepartment,
-  updateAcademicDeartment,
+  updateAcademicDepartment,
 };

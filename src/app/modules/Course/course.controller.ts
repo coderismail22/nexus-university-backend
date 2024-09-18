@@ -30,7 +30,10 @@ const updateCourse = catchAsync(async (req, res) => {
 const assignFacultiesWithCourseIntoDB = catchAsync(async (req, res) => {
   const { courseId } = req.params;
   const { faculties } = req.body;
-  const result = await CourseServices.updateCourseIntoDB(courseId, faculties);
+  const result = await CourseServices.assignFacultiesWithCourseIntoDB(
+    courseId,
+    faculties,
+  );
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -43,7 +46,10 @@ const assignFacultiesWithCourseIntoDB = catchAsync(async (req, res) => {
 const removeFacultiesFromCourseFromDB = catchAsync(async (req, res) => {
   const { courseId } = req.params;
   const { faculties } = req.body;
-  const result = await CourseServices.updateCourseIntoDB(courseId, faculties);
+  const result = await CourseServices.removeFacultiesFromCourseFromDB(
+    courseId,
+    faculties,
+  );
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,

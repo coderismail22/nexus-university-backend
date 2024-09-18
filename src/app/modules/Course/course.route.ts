@@ -21,14 +21,14 @@ router.patch(
 
 // Assign Faculties With Course
 router.put(
-  ":courseId/assign-faculties",
+  "/:courseId/assign-faculties",
   validateRequest(CourseValidations.facultiesWithCourseValidationSchema),
-  CourseControllers.removeFacultiesFromCourseFromDB,
+  CourseControllers.assignFacultiesWithCourseIntoDB,
 );
 
 // Discharge Faculties From Course
 router.delete(
-  ":courseId/remove-faculties",
+  "/:courseId/remove-faculties",
   validateRequest(CourseValidations.facultiesWithCourseValidationSchema),
   CourseControllers.removeFacultiesFromCourseFromDB,
 );
