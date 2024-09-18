@@ -2,6 +2,7 @@ import express from "express";
 import validateRequest from "../../middlewares/validateRequest";
 import { CourseValidations } from "./course.validation";
 import { CourseControllers } from "./course.controller";
+import { CourseFaculty } from "./course.model";
 const router = express.Router();
 
 // Create a course
@@ -16,6 +17,13 @@ router.patch(
   "/:id",
   validateRequest(CourseValidations.updateCourseValidationSchema),
   CourseControllers.updateCourse,
+);
+
+// Assign Courses to Faculties
+router.put(
+  ":courseId/assignment-faculties",
+  validateRequest(CourseValidations.assignFacultiesWithCourseValidationSchema),
+  CourseControllers.assignFacultiesWithCourseIntoDB,
 );
 
 //Get all courses
