@@ -19,11 +19,18 @@ router.patch(
   CourseControllers.updateCourse,
 );
 
-// Assign Courses to Faculties
+// Assign Faculties With Course
 router.put(
-  ":courseId/assignment-faculties",
-  validateRequest(CourseValidations.assignFacultiesWithCourseValidationSchema),
-  CourseControllers.assignFacultiesWithCourseIntoDB,
+  ":courseId/assign-faculties",
+  validateRequest(CourseValidations.facultiesWithCourseValidationSchema),
+  CourseControllers.removeFacultiesFromCourseFromDB,
+);
+
+// Discharge Faculties From Course
+router.delete(
+  ":courseId/remove-faculties",
+  validateRequest(CourseValidations.facultiesWithCourseValidationSchema),
+  CourseControllers.removeFacultiesFromCourseFromDB,
 );
 
 //Get all courses
