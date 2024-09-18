@@ -12,55 +12,85 @@ const createCourseIntoDB = async (course: TCourse) => {
 // TODO: Incomplete
 // Update a course
 const updateCourseIntoDB = async (id: string, payload: Partial<TCourse>) => {
-  const { preRequisiteCourses, ...remainingCourseData } = payload;
-  console.log("id", id);
-  console.log("prereq", remainingCourseData);
-  //Step-01: Update Basic Information
+  const session = await Course.startSession(); // Start a session for the transaction
+  session.startTransaction(); // Start a new transaction
 
-  const updatedBasicCourseInfo = await Course.findByIdAndUpdate(
-    id,
-    remainingCourseData,
-    {
-      new: true,
-      runValidators: true,
-    },
-  );
+  try {
+    const { preRequisiteCourses, ...remainingCourseData } = payload;
+    console.log("id", id);
+    console.log("prereq", remainingCourseData);
 
-  // Step-02: Check if there are any prerequisiteCourses
-  if (preRequisiteCourses && preRequisiteCourses.length > 0) {
-    // Filter out the deleted prerequisite courses and get an array of Id strings
-    const prerequisiteCoursesToDelete = preRequisiteCourses
-      .filter(
-        (eachPreReqCourse) =>
-          eachPreReqCourse.course && eachPreReqCourse.isDeleted,
-      )
-      .map((eachCourse) => eachCourse.course);
-    console.log(prerequisiteCoursesToDelete);
-
-    //Data Structure Preview:
-    [{ course: "66ea1f6b7c6a880120aa14fb", isDeleted: true }]; // before filter and map
-    ["66ea1f6b7c6a880120aa14fb"]; // after filter and map
-
-    // Remove specific fields from the prerequisiteCourses array
-    const deletedPrerequisiteCourse = await Course.findByIdAndUpdate(id, {
-      $pull: {
-        preRequisiteCourses: { course: { $in: prerequisiteCoursesToDelete } },
+    // Step-01: Update Basic Information
+    const updatedBasicCourseInfo = await Course.findByIdAndUpdate(
+      id,
+      remainingCourseData,
+      {
+        new: true,
+        runValidators: true,
+        session, // Ensure this update is part of the transaction
       },
-    });
+    );
+
+    // Step-02: Check if there are any prerequisiteCourses
+    if (preRequisiteCourses && preRequisiteCourses.length > 0) {
+      // Filter out the deleted prerequisite courses and get an array of Id strings
+      const prerequisiteCoursesToDelete = preRequisiteCourses
+        .filter(
+          (eachPreReqCourse) =>
+            eachPreReqCourse.course && eachPreReqCourse.isDeleted,
+        )
+        .map((eachCourse) => eachCourse.course);
+      console.log(prerequisiteCoursesToDelete);
+
+      // Remove specific courses from the prerequisiteCourses array
+      await Course.findByIdAndUpdate(
+        id,
+        {
+          $pull: {
+            preRequisiteCourses: {
+              course: { $in: prerequisiteCoursesToDelete },
+            },
+          },
+        },
+        { session }, // Include in the transaction
+      );
+    }
+
+    // Step-03: Add new prerequisite courses
+    const prerequisiteCoursesToAdd = preRequisiteCourses?.filter(
+      (eachCourse) => eachCourse.course && !eachCourse.isDeleted,
+    );
+
+    if (prerequisiteCoursesToAdd && prerequisiteCoursesToAdd.length > 0) {
+      await Course.findByIdAndUpdate(
+        id,
+        {
+          $addToSet: {
+            preRequisiteCourses: { $each: prerequisiteCoursesToAdd },
+          },
+        },
+        { session }, // Include in the transaction
+      );
+    }
+
+    // Step-04: Commit the transaction if everything goes well
+    await session.commitTransaction();
+
+    // Populate the result
+    const result = await Course.findById(id).populate(
+      "preRequisiteCourses.course",
+    );
+
+    return result;
+  } catch (error) {
+    // If anything fails, abort the transaction
+    await session.abortTransaction();
+    console.error("Transaction aborted due to error:", error);
+    throw error; // Re-throw the error after aborting
+  } finally {
+    // End the session whether the transaction succeeded or failed
+    session.endSession();
   }
-
-  // Add new prerequisite courses
-  const prerequisiteCoursesToAdd = preRequisiteCourses?.filter(
-    (eachCourse) => eachCourse.course && !eachCourse.isDeleted,
-  );
-
-  const addedPrerequisiteCourse = await Course.findByIdAndUpdate(id, {
-    $addToSet: { preRequisiteCourses: { $each: prerequisiteCoursesToAdd } },
-  });
-
-  const result = Course.findById(id).populate("preRequisiteCourses.course");
-
-  return result;
 };
 
 // Get all courses
