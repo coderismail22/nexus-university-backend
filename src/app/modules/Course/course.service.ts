@@ -37,16 +37,30 @@ const updateCourseIntoDB = async (id: string, payload: Partial<TCourse>) => {
       .map((eachCourse) => eachCourse.course);
     console.log(prerequisiteCoursesToDelete);
 
+    //Data Structure Preview:
+    [{ course: "66ea1f6b7c6a880120aa14fb", isDeleted: true }]; // before filter and map
+    ["66ea1f6b7c6a880120aa14fb"]; // after filter and map
+
     // Remove specific fields from the prerequisiteCourses array
-    [{ course: "66ea1f6b7c6a880120aa14fb", isDeleted: true }];
-    ["66ea1f6b7c6a880120aa14fb"];
     const deletedPrerequisiteCourse = await Course.findByIdAndUpdate(id, {
       $pull: {
         preRequisiteCourses: { course: { $in: prerequisiteCoursesToDelete } },
       },
     });
   }
-  return updatedBasicCourseInfo;
+
+  // Add new prerequisite courses
+  const prerequisiteCoursesToAdd = preRequisiteCourses?.filter(
+    (eachCourse) => eachCourse.course && !eachCourse.isDeleted,
+  );
+
+  const addedPrerequisiteCourse = await Course.findByIdAndUpdate(id, {
+    $addToSet: { preRequisiteCourses: { $each: prerequisiteCoursesToAdd } },
+  });
+
+  const result = Course.findById(id).populate("preRequisiteCourses.course");
+
+  return result;
 };
 
 // Get all courses
