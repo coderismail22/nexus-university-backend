@@ -54,6 +54,19 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
     throw new AppError(httpStatus.NOT_FOUND, "Faculty not found");
   }
 
+  // check : does academic department belong to faculty
+  const doesDepartmentBelongToFaculty = await AcademicDepartment.findOne({
+    academicFaculty,
+    _id: academicDepartment,
+  });
+
+  console.log(doesDepartmentBelongToFaculty);
+  if (!doesDepartmentBelongToFaculty) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      `This ${doesAcademicDepartmentExist.name} does not belong to ${doesAcademicFacultyExist.name}`,
+    );
+  }
   const result = await OfferedCourse.create({ ...payload, academicSemester });
   return result;
 };
