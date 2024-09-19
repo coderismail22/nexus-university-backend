@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { BloodGroup, Gender } from './faculty.constant';
+import { z } from "zod";
+import { BloodGroup, Gender } from "./faculty.constant";
 
 const createUserNameValidationSchema = z.object({
   firstName: z
@@ -7,7 +7,7 @@ const createUserNameValidationSchema = z.object({
     .min(1)
     .max(20)
     .refine((value) => /^[A-Z]/.test(value), {
-      message: 'First Name must start with a capital letter',
+      message: "First Name must start with a capital letter",
     }),
   middleName: z.string(),
   lastName: z.string(),
