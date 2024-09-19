@@ -40,7 +40,7 @@ const offeredCourseSchema = new Schema<TOfferedCourse>(
       required: true,
     },
     section: { type: Number, required: true },
-    days: { type: String, required: true, enum: Days },
+    days: [{ type: String, required: true, enum: Days }],
     startTime: {
       type: String,
       required: true,
