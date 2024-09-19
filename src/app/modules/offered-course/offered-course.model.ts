@@ -29,7 +29,7 @@ const offeredCourseSchema = new Schema<TOfferedCourse>(
       required: true,
       ref: "Course",
     },
-    //   TODO:"Confused-Faculty or Academic Faculty ???"
+    // faculty person, who will actually take faculty classes/courses
     faculty: {
       type: Schema.Types.ObjectId,
       required: true,
