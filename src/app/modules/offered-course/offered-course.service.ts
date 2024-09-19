@@ -3,6 +3,7 @@ import { OfferedCourse } from "./offered-course.model";
 
 // Create an offered course
 const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
+  
   const result = await OfferedCourse.create(payload);
   return result;
 };
