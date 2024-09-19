@@ -14,16 +14,11 @@ router.post(
 // Get all the offered courses
 router.get(
   "/get-all-offered-courses",
-  validateRequest(OfferedCourseValidations.createOfferedCourseValidationSchema),
   OfferedCourseControllers.getAllOfferedCourses,
 );
 
 // Get a single offered course
-router.get(
-  "/:id",
-  validateRequest(OfferedCourseValidations.createOfferedCourseValidationSchema),
-  OfferedCourseControllers.getSingleOfferedCourse,
-);
+router.get("/:id", OfferedCourseControllers.getSingleOfferedCourse);
 
 // Update an offered course
 router.patch(
