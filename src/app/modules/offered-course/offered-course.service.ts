@@ -2,6 +2,11 @@ import httpStatus from "http-status";
 import AppError from "../../errors/AppError";
 import { TOfferedCourse } from "./offered-course.interface";
 import { OfferedCourse } from "./offered-course.model";
+import { AcademicDepartment } from "../academicDepartment/academicDepartment.model";
+import { AcademicSemester } from "../academicSemester/academicSemester.model";
+import { AcademicFaculty } from "../academicFaculty/academicFaculty.model";
+import { Course, CourseFaculty } from "../Course/course.model";
+import { SemesterRegistration } from "../semester-registration/semester-registration.model";
 
 // Create an offered course
 const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
@@ -15,29 +20,40 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
   } = payload;
 
   // 1.check department
-  if (!academicDepartment) {
+  const doesAcademicDepartmentExist =
+    await AcademicDepartment.findById(academicDepartment);
+  if (!doesAcademicDepartmentExist) {
     throw new AppError(httpStatus.NOT_FOUND, "Academic department not found");
   }
   // 2.check semester
-  if (!academicSemester) {
+  const doesAcademicSemesterExist =
+    await AcademicSemester.findById(academicSemester);
+  if (!doesAcademicSemesterExist) {
     throw new AppError(httpStatus.NOT_FOUND, "Academic semester not found");
   }
   // 3.check academic faculty
-  if (!academicFaculty) {
+  const doesAcademicFacultyExist =
+    await AcademicFaculty.findById(academicFaculty);
+  if (!doesAcademicFacultyExist) {
     throw new AppError(httpStatus.NOT_FOUND, "Academic faculty not found");
   }
   // 4.check course
-  if (!course) {
+  const doesCourseExist = await Course.findById(course);
+  if (!doesCourseExist) {
     throw new AppError(httpStatus.NOT_FOUND, "Course not found");
   }
   // 5.check registration
-  if (!semesterRegistration) {
+  const doesSemesterRegistrationExist =
+    await SemesterRegistration.findById(semesterRegistration);
+  if (!doesSemesterRegistrationExist) {
     throw new AppError(httpStatus.NOT_FOUND, "Semester registration not found");
   }
   // 6.check faculty
-  if (!faculty) {
+  const doesFacultyExists = await CourseFaculty.findById(faculty);
+  if (!doesFacultyExists) {
     throw new AppError(httpStatus.NOT_FOUND, "Faculty not found");
   }
+
   const result = await OfferedCourse.create(payload);
   return result;
 };
