@@ -18,6 +18,9 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
     semesterRegistration,
     faculty,
     section,
+    days,
+    startTime,
+    endTime,
   } = payload;
   // check registration
   const doesSemesterRegistrationExist =
@@ -79,12 +82,45 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
   if (existingOfferedCourseInSameSemesterAndSection) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
-      `Offered course already exists in the same semester!`,
+      `Offered course already exists in the same semester section!`,
     );
   }
+
+  // check time conflict
+
+  //1. get the current schedules of the faculties
+  const currentAssignedSchedules = await OfferedCourse.find({
+    semesterRegistration,
+    faculty,
+    days: { $in: days }, // days coming from new request
+  }).select("days startTime endTime");
+
+  console.log(currentAssignedSchedules);
+
+  // 2. get the newly requested schedules
+  const newSchedule = {
+    days,
+    startTime,
+    endTime,
+  };
+
+  currentAssignedSchedules.forEach((schedule) => {
+    const existingStartTime = new Date(`1970-01-01T${schedule.startTime}`);
+    const existingEndTime = new Date(`1970-01-01T${schedule.endTime}`);
+    const newStartTime = new Date(`1970-01-01T${newSchedule.startTime}`);
+    const newEndTime = new Date(`1970-01-01T${newSchedule.endTime}`);
+    if (newStartTime <= existingEndTime && newEndTime >= existingStartTime) {
+      throw new AppError(
+        httpStatus.CONFLICT,
+        "This faculty is not available at the specified time! Please choose other time or day.",
+      );
+    }
+  });
+
   const result = await OfferedCourse.create({ ...payload, academicSemester });
   return result;
 };
+
 // Get all offered courses
 const getAllOfferedCoursesFromDB = async () => {};
 // Get a single offered course
