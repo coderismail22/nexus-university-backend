@@ -1,4 +1,4 @@
-import { Schema } from "mongoose";
+import { Schema, model } from "mongoose";
 import { TOfferedCourse } from "./offered-course.interface";
 import { Days } from "./offered-course.constant";
 
@@ -51,4 +51,9 @@ const offeredCourseSchema = new Schema<TOfferedCourse>(
     },
   },
   { timestamps: true },
+);
+
+export const OfferedCourse = model<TOfferedCourse>(
+  "OfferedCourse",
+  offeredCourseSchema,
 );
