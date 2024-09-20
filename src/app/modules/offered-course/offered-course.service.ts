@@ -115,16 +115,85 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
   return result;
 };
 
+// Update a single offered course
+const updateOfferedCourseIntoDB = async (
+  id: string,
+  payload: Pick<TOfferedCourse, "faculty" | "startTime" | "endTime" | "days">,
+) => {
+  const { faculty, days, startTime, endTime } = payload;
+
+  // does offered course exist
+  const doesOfferedCourseExist = await OfferedCourse.findById(id);
+
+  if (!doesOfferedCourseExist) {
+    throw new AppError(httpStatus.NOT_FOUND, "Offered course not found!");
+  }
+  // does faculty exist
+  const doesFacultyExist = await Faculty.findById(faculty);
+
+  if (!doesFacultyExist) {
+    throw new AppError(httpStatus.NOT_FOUND, "Faculty not found!");
+  }
+
+  // check time conflict
+
+  const semesterRegistration = doesOfferedCourseExist?.semesterRegistration;
+
+  const semesterRegistrationStatus =
+    await SemesterRegistration.findById(semesterRegistration);
+
+  if (semesterRegistrationStatus?.status !== "UPCOMING") {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      `You cannot update the offered course as it is ${semesterRegistrationStatus?.status}`,
+    );
+  }
+
+  //1. get the current schedules of the faculties
+  const currentAssignedSchedules = await OfferedCourse.find({
+    semesterRegistration,
+    faculty,
+    days: { $in: days }, // days coming from new request
+  }).select("days startTime endTime");
+
+  console.log(currentAssignedSchedules);
+
+  // 2. get the newly requested schedules
+  const newSchedule = {
+    days,
+    startTime,
+    endTime,
+  };
+
+  if (hasTimeConflict(currentAssignedSchedules, newSchedule)) {
+    throw new AppError(
+      httpStatus.CONFLICT,
+      "This faculty is not available at the specified time! Please choose other time or day.",
+    );
+  }
+
+  const result = await OfferedCourse.findByIdAndUpdate(id, payload, {
+    new: true,
+    runValidators: true,
+  });
+  return result;
+};
+
 // Get all offered courses
 const getAllOfferedCoursesFromDB = async () => {};
+
 // Get a single offered course
 const getSingleOfferedCourseFromDB = async () => {};
-// Update a single offered course
-const updateOfferedCourseIntoDB = async () => {};
+
+// Delete a single offered course
+const deleteSingleOfferedCourseFromDB = async () => {
+
+};
 
 export const OfferedCourseServices = {
   createOfferedCourseIntoDB,
   getAllOfferedCoursesFromDB,
   getSingleOfferedCourseFromDB,
   updateOfferedCourseIntoDB,
+  deleteSingleOfferedCourseFromDB
 };
