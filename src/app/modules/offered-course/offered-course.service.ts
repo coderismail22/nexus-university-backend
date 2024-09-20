@@ -192,7 +192,31 @@ const getSingleOfferedCourseFromDB = async (id: string) => {
 };
 
 // Delete a single offered course
-const deleteSingleOfferedCourseFromDB = async () => {};
+const deleteSingleOfferedCourseFromDB = async (id: string) => {
+  // check if the offered course does exist
+  const doesOfferedCourseExist = await OfferedCourse.findById(id);
+  if (!doesOfferedCourseExist) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "The offered course does not exist !",
+    );
+  }
+
+  // check the semester registration
+  const semesterRegistrationId = doesOfferedCourseExist?.semesterRegistration;
+  const semesterRegistrationStatus = await SemesterRegistration.findById(
+    semesterRegistrationId,
+  ).select("-_id status");
+
+  if (semesterRegistrationStatus?.status !== "UPCOMING") {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      `The offered course cannot be deleted since the status is ${semesterRegistrationStatus}`,
+    );
+  }
+  const result = await OfferedCourse.findByIdAndDelete(id);
+  return result;
+};
 
 export const OfferedCourseServices = {
   createOfferedCourseIntoDB,

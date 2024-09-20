@@ -28,6 +28,6 @@ router.get(
 router.get("/:id", OfferedCourseControllers.getSingleOfferedCourse);
 
 // Delete a single offered course
-router.delete("/:id", OfferedCourseControllers.getSingleOfferedCourse);
+router.delete("/:id", OfferedCourseControllers.deleteSingleOfferedCourse);
 
 export const OfferedCourseRoutes = router;
