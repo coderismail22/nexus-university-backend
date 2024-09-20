@@ -10,22 +10,19 @@ const loginUser = async (payload: TLoginUser) => {
   console.log(payload);
 
   // check: does the user exist
-  const doesUserExist = await User.doesUserExistByCustomId(payload?.id);
-  if (!doesUserExist) {
+  const user = await User.doesUserExistByCustomId(payload?.id);
+  if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, "User does not exist.");
   }
 
   // check: is the user deleted
-  const isUserDeleted = doesUserExist?.isDeleted;
+  const isUserDeleted = user?.isDeleted;
   if (isUserDeleted) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      "The user has been deleted.",
-    );
+    throw new AppError(httpStatus.NOT_FOUND, "The user has been deleted.");
   }
 
   // check: userStatus
-  const userStatus = doesUserExist?.status;
+  const userStatus = user?.status;
   if (userStatus === "blocked") {
     throw new AppError(httpStatus.FORBIDDEN, "The user has been blocked.");
   }
@@ -33,7 +30,7 @@ const loginUser = async (payload: TLoginUser) => {
   // check: doesPasswordMatch
   const doesPasswordMatch = await User.doPasswordsMatch(
     payload?.password,
-    doesUserExist?.password,
+    user?.password,
   );
 
   if (!doesPasswordMatch) {
