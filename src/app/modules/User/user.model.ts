@@ -1,8 +1,8 @@
-import bcrypt from 'bcrypt';
-import { Schema, model } from 'mongoose';
-import config from '../../config';
-import { TUser } from './user.interface';
-const userSchema = new Schema<TUser>(
+import bcrypt from "bcrypt";
+import { Schema, model } from "mongoose";
+import config from "../../config";
+import { IUser } from "./user.interface";
+const userSchema = new Schema<IUser>(
   {
     id: {
       type: String,
@@ -19,12 +19,12 @@ const userSchema = new Schema<TUser>(
     },
     role: {
       type: String,
-      enum: ['student', 'faculty', 'admin'],
+      enum: ["student", "faculty", "admin"],
     },
     status: {
       type: String,
-      enum: ['in-progress', 'blocked'],
-      default: 'in-progress',
+      enum: ["in-progress", "blocked"],
+      default: "in-progress",
     },
     isDeleted: {
       type: Boolean,
@@ -36,7 +36,7 @@ const userSchema = new Schema<TUser>(
   },
 );
 
-userSchema.pre('save', async function (next) {
+userSchema.pre("save", async function (next) {
   // eslint-disable-next-line @typescript-eslint/no-this-alias
   const user = this; // doc
   // hashing password and save into DB
@@ -48,9 +48,9 @@ userSchema.pre('save', async function (next) {
 });
 
 // set '' after saving password
-userSchema.post('save', function (doc, next) {
-  doc.password = '';
+userSchema.post("save", function (doc, next) {
+  doc.password = "";
   next();
 });
 
-export const User = model<TUser>('User', userSchema);
+export const User = model<IUser>("User", userSchema);

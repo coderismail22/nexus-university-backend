@@ -1,11 +1,11 @@
 import httpStatus from "http-status";
 import AppError from "../../errors/AppError";
-import { TUser } from "../user/user.interface";
+import { IUser } from "../user/user.interface";
 import { User } from "../user/user.model";
 import bcrypt from "bcrypt";
 import { UserRoutes } from "../user/user.route";
 // login
-const loginUser = async (payload: Partial<TUser>) => {
+const loginUser = async (payload: Partial<IUser>) => {
   console.log(payload);
 
   // check: does the user exist
