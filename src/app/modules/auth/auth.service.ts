@@ -5,6 +5,8 @@ import { User } from "../user/user.model";
 import bcrypt from "bcrypt";
 import { UserRoutes } from "../user/user.route";
 import { TLoginUser } from "./auth.interface";
+import jwt from "jsonwebtoken";
+import config from "../../config";
 // login
 const loginUser = async (payload: TLoginUser) => {
   console.log(payload);
@@ -37,8 +39,17 @@ const loginUser = async (payload: TLoginUser) => {
     throw new AppError(httpStatus.FORBIDDEN, "Passwords is incorrect.");
   }
   //   TODO: send access and refresh token
-  // result
-  // return result
+
+  // create token and send to the client
+  const jwtPayload = { userId: user?.id, role: user?.role };
+
+  console.log(config.jwt_access_secret as string)
+
+  const accessToken = jwt.sign(jwtPayload, config.jwt_access_secret as string, {
+    expiresIn: "10d",
+  });
+
+  return { accessToken, needsPasswordChange: user?.needsPasswordChange };
 };
 
 export const AuthServices = {
