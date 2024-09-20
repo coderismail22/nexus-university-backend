@@ -11,5 +11,16 @@ export interface IUser {
 
 export interface UserModel extends Model<IUser> {
   //Static method type declaration : function-name(parameter):return
+
+  // doesUserExistByCustomId
   doesUserExistByCustomId(id: string): Promise<IUser>;
+
+  // doPasswordsMatch
+  doPasswordsMatch(
+    plaintextPassword: string,
+    hashedPassword: string,
+  ): Promise<boolean>;
+
+  // isUserDeleted
+  isUserDeleted(id: string): Promise<boolean>;
 }

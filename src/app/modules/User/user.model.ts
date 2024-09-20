@@ -54,7 +54,22 @@ userSchema.post("save", function (doc, next) {
 });
 
 // statics
+
+// doesUserExistByCustomId
 userSchema.statics.doesUserExistByCustomId = async function (id: string) {
   return await User.findOne({ id }); // find with custom id
 };
+
+// doPasswordsMatch
+userSchema.statics.doPasswordsMatch = async function (
+  plaintextPassword,
+  hashedPassword,
+) {
+  return bcrypt.compare(plaintextPassword, hashedPassword);
+};
+
+// isUserDeleted
+userSchema.statics.isUserDeleted = async function(id:string){
+return 
+}
 export const User = model<IUser, UserModel>("User", userSchema);

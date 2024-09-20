@@ -16,29 +16,29 @@ const loginUser = async (payload: TLoginUser) => {
   }
 
   // check: is the user deleted
-  // const isUserDeleted = doesUserExist?.isDeleted;
-  // if (isUserDeleted) {
-  //   throw new AppError(
-  //     httpStatus.NOT_FOUND,
-  //     "The user has been deleted exist.",
-  //   );
-  // }
+  const isUserDeleted = doesUserExist?.isDeleted;
+  if (isUserDeleted) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "The user has been deleted.",
+    );
+  }
 
   // check: userStatus
-  // const userStatus = doesUserExist?.status;
-  // if (userStatus === "blocked") {
-  //   throw new AppError(httpStatus.FORBIDDEN, "The user has been blocked.");
-  // }
+  const userStatus = doesUserExist?.status;
+  if (userStatus === "blocked") {
+    throw new AppError(httpStatus.FORBIDDEN, "The user has been blocked.");
+  }
 
   // check: doesPasswordMatch
-  const doesPasswordMatch = await bcrypt.compare(
+  const doesPasswordMatch = await User.doPasswordsMatch(
     payload?.password,
     doesUserExist?.password,
   );
 
-  // if (!doesPasswordMatch) {
-  //   throw new AppError(httpStatus.FORBIDDEN, "Passwords is incorrect.");
-  // }
+  if (!doesPasswordMatch) {
+    throw new AppError(httpStatus.FORBIDDEN, "Passwords is incorrect.");
+  }
   //   TODO: send access and refresh token
   // result
   // return result
