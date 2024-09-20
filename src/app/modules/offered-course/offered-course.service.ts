@@ -180,20 +180,21 @@ const updateOfferedCourseIntoDB = async (
 };
 
 // Get all offered courses
-const getAllOfferedCoursesFromDB = async () => {};
+const getAllOfferedCoursesFromDB = async () => {
+  const result = await OfferedCourse.find();
+  return result;
+};
 
 // Get a single offered course
 const getSingleOfferedCourseFromDB = async () => {};
 
 // Delete a single offered course
-const deleteSingleOfferedCourseFromDB = async () => {
-
-};
+const deleteSingleOfferedCourseFromDB = async () => {};
 
 export const OfferedCourseServices = {
   createOfferedCourseIntoDB,
   getAllOfferedCoursesFromDB,
   getSingleOfferedCourseFromDB,
   updateOfferedCourseIntoDB,
-  deleteSingleOfferedCourseFromDB
+  deleteSingleOfferedCourseFromDB,
 };

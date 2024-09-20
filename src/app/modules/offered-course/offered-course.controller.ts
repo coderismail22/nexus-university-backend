@@ -32,14 +32,11 @@ const updateSingleOfferedCourse = catchAsync(async (req, res) => {
 // Get all
 const getAllOfferedCourses = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const result = await OfferedCourseServices.updateOfferedCourseIntoDB(
-    id,
-    req.body,
-  );
+  const result = await OfferedCourseServices.getAllOfferedCoursesFromDB();
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "Offered course updated successfully",
+    message: "Retrieved all the offered courses successfully",
     data: result,
   });
 });
