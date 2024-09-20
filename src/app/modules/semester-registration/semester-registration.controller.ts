@@ -62,9 +62,28 @@ const updateSingleSemesterRegistration = catchAsync(async (req, res) => {
   });
 });
 
+// Delete semester registration and associated offered courses
+const deleteSemesterRegistrationAndAllAssociatedOfferedCourses = catchAsync(
+  async (req, res) => {
+    const { id } = req.params;
+    const result =
+      await SemesterRegistrationServices.deleteSemesterRegistrationAndAllAssociatedOfferedCoursesFromDB(
+        id,
+      );
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Deleted the semester registration successfully along with it's associated offered courses.",
+      data: result,
+    });
+  },
+);
+
 export const SemesterRegistrationControllers = {
   createSemesterRegistration,
   getAllSemesterRegistrations,
   getSingleSemesterRegistration,
   updateSingleSemesterRegistration,
+  deleteSemesterRegistrationAndAllAssociatedOfferedCourses,
 };

@@ -204,18 +204,18 @@ const deleteSingleOfferedCourseFromDB = async (id: string) => {
 
   // check the semester registration
   const semesterRegistrationId = doesOfferedCourseExist?.semesterRegistration;
-  const semesterRegistrationStatus = await SemesterRegistration.findById(
+  const semesterRegistration = await SemesterRegistration.findById(
     semesterRegistrationId,
   ).select("-_id status");
 
-  if (semesterRegistrationStatus?.status !== "UPCOMING") {
+  if (semesterRegistration?.status !== "UPCOMING") {
     throw new AppError(
       httpStatus.BAD_REQUEST,
-      `The offered course cannot be deleted since the status is ${semesterRegistrationStatus}`,
+      `The offered course cannot be deleted since the status is ${semesterRegistration?.status}`,
     );
   }
-  const result = await OfferedCourse.findByIdAndDelete(id);
-  return result;
+  // const result = await OfferedCourse.findByIdAndDelete(id);
+  // return result;
 };
 
 export const OfferedCourseServices = {

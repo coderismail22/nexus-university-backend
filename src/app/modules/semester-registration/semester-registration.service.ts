@@ -4,6 +4,8 @@ import { TSemesterRegistration } from "./semester-registration.interface";
 import { SemesterRegistration } from "./semester-registration.model";
 import QueryBuilder from "../../builder/QueryBuilder";
 import { RegistrationStatus } from "./semester-registration.contant";
+import { OfferedCourse } from "../offered-course/offered-course.model";
+import mongoose from "mongoose";
 
 // 1.Create semester registration
 const createSemesterRegistrationIntoDB = async (
@@ -129,9 +131,83 @@ const updateSemesterRegistrationIntoDB = async (
   });
   return result;
 };
+// 5.Delete semester registration and associated offered courses
+const deleteSemesterRegistrationAndAllAssociatedOfferedCoursesFromDB = async (
+  id: string,
+) => {
+  const session = await mongoose.startSession(); // Start the session
+  try {
+    session.startTransaction(); // Start the transaction
+
+    // Check the semester registration status
+    const semesterRegistration = await SemesterRegistration.findById(id)
+      .session(session)
+      .select("-_id status");
+
+    if (!semesterRegistration) {
+      throw new AppError(
+        httpStatus.NOT_FOUND,
+        "Could not find the semester registration.",
+      );
+    }
+
+    if (semesterRegistration.status !== "UPCOMING") {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        `Cannot delete semester registration since the status is ${semesterRegistration.status}`,
+      );
+    }
+
+    // Find associated offered courses
+    const associatedOfferedCourses = await OfferedCourse.find({
+      semesterRegistration: id,
+    }).session(session);
+
+    // Delete all offered courses associated with the semester registration
+    if (associatedOfferedCourses.length > 0) {
+      await OfferedCourse.deleteMany({ semesterRegistration: id }, { session });
+    }
+
+    // Delete the semester registration
+    const result = await SemesterRegistration.findByIdAndDelete(id, {
+      new: true,
+      session,
+    });
+
+    if (!result) {
+      throw new AppError(
+        httpStatus.NOT_FOUND,
+        "Semester registration not found!",
+      );
+    }
+
+    await session.commitTransaction(); // Commit the transaction if successful
+    return result;
+  } catch (error) {
+    await session.abortTransaction(); // Rollback the transaction on error
+
+    // Narrow the error type
+    if (error instanceof Error) {
+      console.error("Transaction failed. Error message:", error.message);
+      console.error("Error stack trace:", error.stack); // Log full error stack for debugging
+    } else {
+      console.error("Transaction failed. Unknown error:", error);
+    }
+
+    // Return appropriate error message based on the errorf
+    throw new AppError(
+      httpStatus.CONFLICT,
+      `${error instanceof Error ? error.message : "Unknown error occurred while deleting the semester registration."}`,
+    );
+  } finally {
+    session.endSession(); // End the session
+  }
+};
+
 export const SemesterRegistrationServices = {
   createSemesterRegistrationIntoDB,
   getAllSemesterRegistrationsFromDB,
   getSingleSemesterRegistrationFromDB,
   updateSemesterRegistrationIntoDB,
+  deleteSemesterRegistrationAndAllAssociatedOfferedCoursesFromDB,
 };

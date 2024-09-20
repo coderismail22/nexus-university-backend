@@ -35,4 +35,10 @@ router.patch(
   SemesterRegistrationControllers.updateSingleSemesterRegistration,
 );
 
+// Delete A Single Registration
+router.delete(
+  "/:id",
+  SemesterRegistrationControllers.deleteSemesterRegistrationAndAllAssociatedOfferedCourses,
+);
+
 export const AcademicSemesterRegistrationRoutes = router;
