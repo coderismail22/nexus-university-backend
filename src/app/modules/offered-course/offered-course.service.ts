@@ -186,7 +186,10 @@ const getAllOfferedCoursesFromDB = async () => {
 };
 
 // Get a single offered course
-const getSingleOfferedCourseFromDB = async () => {};
+const getSingleOfferedCourseFromDB = async (id: string) => {
+  const result = await OfferedCourse.findById(id);
+  return result;
+};
 
 // Delete a single offered course
 const deleteSingleOfferedCourseFromDB = async () => {};
