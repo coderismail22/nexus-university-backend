@@ -9,8 +9,6 @@ import jwt from "jsonwebtoken";
 import config from "../../config";
 // login
 const loginUser = async (payload: TLoginUser) => {
-  console.log(payload);
-
   // check: does the user exist
   const user = await User.doesUserExistByCustomId(payload?.id);
   if (!user) {
@@ -40,7 +38,9 @@ const loginUser = async (payload: TLoginUser) => {
   }
   //   TODO: send access and refresh token
 
-  // create token and send to the cl
+  // create token and send to the client
+  const jwtPayload = { userId: user?.id, role: user?.role };
+
   const accessToken = jwt.sign(jwtPayload, config.jwt_access_secret as string, {
     expiresIn: "10d",
   });
