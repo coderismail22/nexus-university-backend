@@ -7,6 +7,7 @@ import { UserRoutes } from "../user/user.route";
 import { TLoginUser } from "./auth.interface";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import config from "../../config";
+import { createToken } from "./auth.utils";
 // login
 const loginUser = async (payload: TLoginUser) => {
   // check: does the user exist
@@ -41,11 +42,25 @@ const loginUser = async (payload: TLoginUser) => {
   // create token and send to the client
   const jwtPayload = { userId: user?.id, role: user?.role };
 
-  const accessToken = jwt.sign(jwtPayload, config.jwt_access_secret as string, {
-    expiresIn: "10d",
-  });
+  // generate access token
+  const accessToken = createToken(
+    jwtPayload,
+    config.jwt_access_secret as string,
+    config.jwt_access_token_expires_in as string,
+  );
 
-  return { accessToken, needsPasswordChange: user?.needsPasswordChange };
+  // generate refresh token
+  const refreshToken = createToken(
+    jwtPayload,
+    config.jwt_refresh_secret as string,
+    config.jwt_refresh_token_expires_in as string,
+  );
+
+  return {
+    accessToken,
+    refreshToken,
+    needsPasswordChange: user?.needsPasswordChange,
+  };
 };
 
 //change password

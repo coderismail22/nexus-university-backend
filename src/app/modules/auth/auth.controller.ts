@@ -13,7 +13,7 @@ const loginUser = catchAsync(async (req, res) => {
     message: "Login successful",
     data: result,
   });
-});
+}); 
 
 // change password controller
 const changePassword = catchAsync(async (req, res) => {
