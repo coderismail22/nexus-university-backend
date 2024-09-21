@@ -76,4 +76,21 @@ userSchema.statics.doPasswordsMatch = async function (
 userSchema.statics.isUserDeleted = async function (id: string) {
   return;
 };
+
+// isJWTIssuedAtBeforeChangingPassword
+userSchema.statics.isJWTIssuedAtBeforeChangingPassword = async function (
+  jwtIssuedAtTimeStamp: string,
+  passwordChangedAtTimeStamp: Date,
+) {
+  //covert date(passwordChangedAtTimeStamp) to milliseconds
+
+  const convertedPasswordChangedAtTimeStamp =
+    new Date(passwordChangedAtTimeStamp).getTime() / 1000;
+
+  console.log(jwtIssuedAtTimeStamp, convertedPasswordChangedAtTimeStamp);
+  const isJWTIssuedAtBeforeChangingPassword =
+    jwtIssuedAtTimeStamp < convertedPasswordChangedAtTimeStamp;
+  return isJWTIssuedAtBeforeChangingPassword;
+};
+
 export const User = model<IUser, UserModel>("User", userSchema);

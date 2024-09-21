@@ -25,6 +25,12 @@ export interface UserModel extends Model<IUser> {
 
   // isUserDeleted
   isUserDeleted(id: string): Promise<boolean>;
+
+  // isJWTIssuedAtBeforeChangingPassword
+  isJWTIssuedAtBeforeChangingPassword(
+    jwtIssuedAtTimeStamp: number,
+    passwordChangedAtTimeStamp: Date,
+  ): boolean;
 }
 
 export type TUserRole = keyof typeof USER_ROLE;
