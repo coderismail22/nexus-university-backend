@@ -55,7 +55,7 @@ const guardianSchema = new Schema<TGuardian>({
   },
 });
 
-const localGuradianSchema = new Schema<TLocalGuardian>({
+const localGuardianSchema = new Schema<TLocalGuardian>({
   name: {
     type: String,
     required: [true, 'Name is required'],
@@ -110,7 +110,7 @@ const studentSchema = new Schema<TStudent, StudentModel>(
       type: String,
       required: [true, 'Emergency contact number is required'],
     },
-    bloogGroup: {
+    bloodGroup: {
       type: String,
       enum: {
         values: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
@@ -130,7 +130,7 @@ const studentSchema = new Schema<TStudent, StudentModel>(
       required: [true, 'Guardian information is required'],
     },
     localGuardian: {
-      type: localGuradianSchema,
+      type: localGuardianSchema,
       required: [true, 'Local guardian information is required'],
     },
     profileImg: { type: String },

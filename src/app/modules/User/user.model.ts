@@ -58,7 +58,7 @@ userSchema.post("save", function (doc, next) {
 
 // doesUserExistByCustomId
 userSchema.statics.doesUserExistByCustomId = async function (id: string) {
-  return await User.findOne({ id }); // find with custom id
+  return await User.findOne({ id }).select("+password"); // find with custom id +  explicit selection
 };
 
 // doPasswordsMatch

@@ -23,7 +23,7 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
   // create a user object
   const userData: Partial<IUser> = {};
 
-  //if password is not given , use deafult password
+  //if password is not given , use default password
   userData.password = password || (config.default_password as string);
 
   //set student role
@@ -36,6 +36,14 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
 
   if (!admissionSemester) {
     throw new AppError(400, "Admission semester not found");
+  }
+  // find academic department info
+  const academicDepartment = await AcademicDepartment.findById(
+    payload.academicDepartment,
+  );
+
+  if (!academicDepartment) {
+    throw new AppError(400, "Academic department not found");
   }
 
   const session = await mongoose.startSession();
@@ -135,7 +143,7 @@ const createAdminIntoDB = async (password: string, payload: TAdmin) => {
   // create a user object
   const userData: Partial<IUser> = {};
 
-  //if password is not given , use deafult password
+  //if password is not given , use default password
   userData.password = password || (config.default_password as string);
 
   //set student role
