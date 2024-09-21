@@ -12,6 +12,7 @@ const userSchema = new Schema<IUser>(
     password: {
       type: String,
       required: true,
+      select: 0, // makes invisible while finding
     },
     needsPasswordChange: {
       type: Boolean,
@@ -69,7 +70,7 @@ userSchema.statics.doPasswordsMatch = async function (
 };
 
 // isUserDeleted
-userSchema.statics.isUserDeleted = async function(id:string){
-return 
-}
+userSchema.statics.isUserDeleted = async function (id: string) {
+  return;
+};
 export const User = model<IUser, UserModel>("User", userSchema);
