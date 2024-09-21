@@ -11,16 +11,17 @@ const router = express.Router();
 router.get("/", auth(USER_ROLE.admin), FacultyControllers.getAllFaculties);
 
 // Get one
-router.get("/:id", FacultyControllers.getSingleFaculty);
+router.get("/:id", auth(USER_ROLE.admin), FacultyControllers.getSingleFaculty);
 
 // Update one
 router.patch(
   "/:id",
+  auth(USER_ROLE.admin),
   validateRequest(updateFacultyValidationSchema),
   FacultyControllers.updateFaculty,
 );
 
 // Delete one
-router.delete("/:id", FacultyControllers.deleteFaculty);
+router.delete("/:id", auth(USER_ROLE.admin), FacultyControllers.deleteFaculty);
 
 export const FacultyRoutes = router;
