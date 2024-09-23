@@ -19,18 +19,8 @@ app.use(cors({ origin: ["http://localhost:5000/api/v1"] }));
 // application routes
 app.use("/api/v1", router);
 
-const test = async (req: Request, res: Response) => {
-  const a = 200;
-  res.send(a);
-};
-
-// app.use("/", (req, res) => {
-//   res.send("Server is running");
-// });
-
+//Middleware
 app.use(globalErrorHandler);
-
-//Not Found
 app.use(notFound);
 
 export default app;
