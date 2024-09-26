@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import cors from "cors";
-import express, { Application, Request, Response } from "express";
+import express, { Application } from "express";
 import globalErrorHandler from "./app/middlewares/globalErrorhandler";
 import notFound from "./app/middlewares/notFound";
 import router from "./app/routes";
@@ -19,7 +19,7 @@ app.use(cors({ origin: ["http://localhost:5000/api/v1"] }));
 // application routes
 app.use("/api/v1", router);
 
-//Middleware
+//Middlewares
 app.use(globalErrorHandler);
 app.use(notFound);
 

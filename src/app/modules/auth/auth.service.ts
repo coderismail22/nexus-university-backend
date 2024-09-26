@@ -6,7 +6,9 @@ import { TLoginUser } from "./auth.interface";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import config from "../../config";
 import { createToken } from "./auth.utils";
+
 // login
+
 const loginUser = async (payload: TLoginUser) => {
   // check: does the user exist
   const user = await User.doesUserExistByCustomId(payload?.id);

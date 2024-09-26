@@ -3,7 +3,7 @@ import validateRequest from "../../middlewares/validateRequest";
 import { AuthValidations } from "./auth.validation";
 import { AuthControllers } from "./auth.controller";
 import auth from "../../middlewares/auth";
-import { USER_ROLE } from "../user/user.contant";
+import { USER_ROLE } from "../user/user.constant";
 const router = express.Router();
 
 router.post(
