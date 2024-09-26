@@ -6,22 +6,33 @@ import auth from "../../middlewares/auth";
 import { USER_ROLE } from "../user/user.constant";
 const router = express.Router();
 
+// Login
 router.post(
   "/login",
   validateRequest(AuthValidations.loginValidationSchema),
   AuthControllers.loginUser,
 );
 
+// Change Password
 router.post(
   "/change-password",
   auth(USER_ROLE.admin, USER_ROLE.faculty, USER_ROLE.student),
   validateRequest(AuthValidations.changePasswordValidationSchema),
   AuthControllers.changePassword,
 );
+
+// Refresh Password
 router.post(
   "/refresh-token",
   validateRequest(AuthValidations.refreshTokenValidationSchema),
   AuthControllers.refreshToken,
+);
+
+// Forgot Password
+router.post(
+  "/forgot-password",
+  validateRequest(AuthValidations.forgotPasswordValidationSchema),
+  AuthControllers.forgotPassword,
 );
 
 export const AuthRoutes = router;
