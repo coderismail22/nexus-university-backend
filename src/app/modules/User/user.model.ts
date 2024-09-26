@@ -9,6 +9,11 @@ const userSchema = new Schema<IUser>(
       required: true,
       unique: true,
     },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
     password: {
       type: String,
       required: true,
@@ -87,9 +92,10 @@ userSchema.statics.isJWTIssuedAtBeforeChangingPassword = async function (
   const convertedPasswordChangedAtTimeStamp =
     new Date(passwordChangedAtTimeStamp).getTime() / 1000;
 
-  console.log(jwtIssuedAtTimeStamp, convertedPasswordChangedAtTimeStamp);
+  const convertedJwtIssuedAtTimeStamp = parseInt(jwtIssuedAtTimeStamp);
+
   const isJWTIssuedAtBeforeChangingPassword =
-    jwtIssuedAtTimeStamp < convertedPasswordChangedAtTimeStamp;
+    convertedJwtIssuedAtTimeStamp < convertedPasswordChangedAtTimeStamp;
   return isJWTIssuedAtBeforeChangingPassword;
 };
 
