@@ -190,42 +190,26 @@ const createAdminIntoDB = async (password: string, payload: TAdmin) => {
   }
 };
 
-const getMe = async (token: string) => {
+const getMe = async (userId: string, role: string) => {
   // Check if token is provided
-  if (!token) {
-    throw new AppError(
-      httpStatus.UNAUTHORIZED,
-      "Authorization token is missing.",
-    );
+  if (!userId || !role) {
+    throw new AppError(httpStatus.UNAUTHORIZED, "User not found.");
   }
 
-  // Decode the token
-  const decoded = await verifyToken(token, config.jwt_access_secret as string);
-
-  // Check if the token is valid and contains the necessary information
-  if (
-    !decoded ||
-    typeof decoded === "string" ||
-    !decoded?.role ||
-    !decoded?.userId
-  ) {
-    throw new AppError(httpStatus.UNAUTHORIZED, "Invalid or incomplete token.");
-  }
-
-  console.log("Decoded token:", decoded);
-  const { role, userId } = decoded;
   let result;
 
   // Fetch data based on the user's role
   switch (role) {
     case "admin":
-      result = await Admin.findOne({ id: userId }).populate("");
+      result = await Admin.findOne({ id: userId });
       break;
     case "faculty":
-      result = await Faculty.findOne({ id: userId }).populate("");
+      result = await Faculty.findOne({ id: userId });
       break;
     case "student":
-      result = await Student.findOne({ id: userId }).populate("academicDepartment admissionSemester");
+      result = await Student.findOne({ id: userId }).populate(
+        "academicDepartment admissionSemester",
+      );
       break;
     default:
       throw new AppError(

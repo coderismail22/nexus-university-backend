@@ -45,14 +45,14 @@ const createAdmin = catchAsync(async (req, res) => {
 
 // Get me
 const getMe = catchAsync(async (req, res) => {
-  const token = req?.headers?.authorization;
+  const user = req?.user;
 
-  const result = await UserServices.getMe(token as string);
+  const result = await UserServices.getMe(user.userId, user.role);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "Profile data retrieved successfully",
+    message: "User retrieved successfully",
     data: result,
   });
 });
