@@ -6,6 +6,7 @@ import { TLoginUser } from "./auth.interface";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import config from "../../config";
 import { createToken } from "./auth.utils";
+import sendEmail from "../../utils/sendEmail";
 
 // login
 
@@ -214,7 +215,9 @@ const forgotPassword = async (userId: string) => {
     config.jwt_access_secret as string,
     "10m",
   );
-  const resetLink = `http://localhost:5000?id=${user.id}&token=${resetToken}`;
+  const resetPasswordUILink = `${config.reset_password_ui_link}?id=${user.id}&token=${resetToken}`;
+  console.log(resetPasswordUILink);
+  sendEmail(resetPasswordUILink);
 };
 export const AuthServices = {
   loginUser,
