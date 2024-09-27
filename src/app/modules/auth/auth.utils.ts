@@ -8,3 +8,7 @@ export const createToken = (
     expiresIn,
   });
 };
+
+export const verifyToken = async (token: string, secret: string) => {
+  return jwt.verify(token, secret);
+};

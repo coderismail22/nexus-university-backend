@@ -2,6 +2,7 @@ import httpStatus from "http-status";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import { UserServices } from "./user.service";
+import { JwtPayload } from "jsonwebtoken";
 
 const createStudent = catchAsync(async (req, res) => {
   const { password, student: studentData } = req.body;
@@ -42,8 +43,23 @@ const createAdmin = catchAsync(async (req, res) => {
   });
 });
 
+// Get me
+const getMe = catchAsync(async (req, res) => {
+  const token = req?.headers?.authorization;
+
+  const result = await UserServices.getMe(token as string);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Profile data retrieved successfully",
+    data: result,
+  });
+});
+
 export const UserControllers = {
   createStudent,
   createFaculty,
   createAdmin,
+  getMe,
 };

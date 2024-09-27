@@ -18,6 +18,8 @@ import {
   generateFacultyId,
   generateStudentId,
 } from "./user.utils";
+import { JwtPayload } from "jsonwebtoken";
+import { verifyToken } from "../auth/auth.utils";
 
 const createStudentIntoDB = async (password: string, payload: TStudent) => {
   // create a user object
@@ -95,7 +97,6 @@ const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
   userData.role = "faculty";
   userData.email = payload.email;
 
-
   // find academic department info
   const academicDepartment = await AcademicDepartment.findById(
     payload.academicDepartment,
@@ -153,7 +154,6 @@ const createAdminIntoDB = async (password: string, payload: TAdmin) => {
   userData.role = "admin";
   userData.email = payload.email;
 
-
   const session = await mongoose.startSession();
 
   try {
@@ -190,8 +190,61 @@ const createAdminIntoDB = async (password: string, payload: TAdmin) => {
   }
 };
 
+const getMe = async (token: string) => {
+  // Check if token is provided
+  if (!token) {
+    throw new AppError(
+      httpStatus.UNAUTHORIZED,
+      "Authorization token is missing.",
+    );
+  }
+
+  // Decode the token
+  const decoded = await verifyToken(token, config.jwt_access_secret as string);
+
+  // Check if the token is valid and contains the necessary information
+  if (
+    !decoded ||
+    typeof decoded === "string" ||
+    !decoded?.role ||
+    !decoded?.userId
+  ) {
+    throw new AppError(httpStatus.UNAUTHORIZED, "Invalid or incomplete token.");
+  }
+
+  console.log("Decoded token:", decoded);
+  const { role, userId } = decoded;
+  let result;
+
+  // Fetch data based on the user's role
+  switch (role) {
+    case "admin":
+      result = await Admin.findOne({ id: userId }).populate("");
+      break;
+    case "faculty":
+      result = await Faculty.findOne({ id: userId }).populate("");
+      break;
+    case "student":
+      result = await Student.findOne({ id: userId }).populate("academicDepartment admissionSemester");
+      break;
+    default:
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        "Access denied. Role not recognized.",
+      );
+  }
+
+  // Return the result or handle the case where no data is found
+  if (!result) {
+    throw new AppError(httpStatus.NOT_FOUND, `${role} data not found.`);
+  }
+
+  return result;
+};
+
 export const UserServices = {
   createStudentIntoDB,
   createFacultyIntoDB,
   createAdminIntoDB,
+  getMe,
 };
