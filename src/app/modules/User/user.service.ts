@@ -4,7 +4,6 @@ import mongoose from "mongoose";
 import config from "../../config";
 import AppError from "../../errors/AppError";
 import { TAdmin } from "../Admin/admin.interface";
-import { Admin } from "../Admin/admin.model";
 import { TFaculty } from "../Faculty/faculty.interface";
 import { Faculty } from "../Faculty/faculty.model";
 import { AcademicDepartment } from "../academicDepartment/academicDepartment.model";
@@ -18,8 +17,7 @@ import {
   generateFacultyId,
   generateStudentId,
 } from "./user.utils";
-import { JwtPayload } from "jsonwebtoken";
-import { verifyToken } from "../auth/auth.utils";
+import { Admin } from "../admin/admin.model";
 
 const createStudentIntoDB = async (password: string, payload: TStudent) => {
   // create a user object
@@ -190,7 +188,7 @@ const createAdminIntoDB = async (password: string, payload: TAdmin) => {
   }
 };
 
-const getMe = async (userId: string, role: string) => {
+const getMeFromDB = async (userId: string, role: string) => {
   // Check if token is provided
   if (!userId || !role) {
     throw new AppError(httpStatus.UNAUTHORIZED, "User not found.");
@@ -226,9 +224,19 @@ const getMe = async (userId: string, role: string) => {
   return result;
 };
 
+const changeStatusIntoDB = async (id: string, status: string) => {
+  const result = await User.findByIdAndUpdate(
+    id,
+    { status },
+    { new: true, runValidators: true },
+  );
+  return result;
+};
+
 export const UserServices = {
   createStudentIntoDB,
   createFacultyIntoDB,
   createAdminIntoDB,
-  getMe,
+  getMeFromDB,
+  changeStatusIntoDB,
 };

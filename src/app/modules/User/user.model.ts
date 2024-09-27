@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import { Schema, model } from "mongoose";
 import config from "../../config";
 import { IUser, UserModel } from "./user.interface";
+import { STATUS } from "./user.constant";
 const userSchema = new Schema<IUser>(
   {
     id: {
@@ -32,7 +33,7 @@ const userSchema = new Schema<IUser>(
     },
     status: {
       type: String,
-      enum: ["in-progress", "blocked"],
+      enum: STATUS,
       default: "in-progress",
     },
     isDeleted: {
@@ -78,9 +79,9 @@ userSchema.statics.doPasswordsMatch = async function (
 };
 
 // isUserDeleted
-userSchema.statics.isUserDeleted = async function (id: string) {
-  return;
-};
+// userSchema.statics.isUserDeleted = async function (id: string) {
+//   return;
+// };
 
 // isJWTIssuedAtBeforeChangingPassword
 userSchema.statics.isJWTIssuedAtBeforeChangingPassword = async function (

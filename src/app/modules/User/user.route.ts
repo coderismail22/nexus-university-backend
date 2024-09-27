@@ -1,10 +1,11 @@
 import express from "express";
 import validateRequest from "../../middlewares/validateRequest";
-import { createAdminValidationSchema } from "../Admin/admin.validation";
 import { createFacultyValidationSchema } from "../Faculty/faculty.validation";
 import { createStudentValidationSchema } from "./../student/student.validation";
 import { UserControllers } from "./user.controller";
 import auth from "../../middlewares/auth";
+import { UserValidations } from "./user.validation";
+import { AdminValidations } from "../admin/admin.validation";
 
 const router = express.Router();
 
@@ -22,14 +23,17 @@ router.post(
 
 router.post(
   "/create-admin",
-  validateRequest(createAdminValidationSchema),
+  validateRequest(AdminValidations.createAdminValidationSchema),
   UserControllers.createAdmin,
 );
 
-router.get(
-  "/me",
-  auth("student", "faculty", "admin"),
-  UserControllers.getMe,
+router.post(
+  "/change-status/:id",
+  auth("admin"),
+  validateRequest(UserValidations.changeUserStatusValidationSchema),
+  UserControllers.changeStatus,
 );
+
+router.get("/me", auth("student", "faculty", "admin"), UserControllers.getMe);
 
 export const UserRoutes = router;
