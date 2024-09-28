@@ -1,26 +1,45 @@
 import { v2 as cloudinary } from "cloudinary";
 import config from "../config";
+import fs from "fs/promises"; // Use promises-based version of fs
 import multer from "multer";
 
 export const sendImageToCloudinary = async (
   imageName: string,
   path: string,
 ) => {
-  // Configuration
+  // Cloudinary configuration
   cloudinary.config({
     cloud_name: config.cloud_name,
     api_key: config.api_key,
     api_secret: config.api_secret,
   });
+
   try {
-    // Upload an image
+    // Upload image to Cloudinary
     const uploadResult = await cloudinary.uploader.upload(path, {
       public_id: imageName,
     });
-    console.log("uploadedResult", uploadResult);
-    return uploadResult
+
+    console.log("Upload successful:", uploadResult);
+
+    // Delete the local file asynchronously after successful upload
+    await fs.unlink(path);
+    console.log("Local file deleted successfully");
+
+    return uploadResult;
   } catch (error) {
-    console.log(error);
+    console.error("Error during image upload:", error);
+
+    // Ensure file is deleted even if the upload fails (cleanup)
+    try {
+      await fs.unlink(path);
+      console.log("Local file deleted after failure");
+    } catch (deleteError) {
+      console.error("Error deleting local file:", deleteError);
+    }
+
+    // Re-throw the error so it can be handled by the calling code
+    throw new Error("Image upload failed: " + error);
   }
 };
 

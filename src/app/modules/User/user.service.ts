@@ -59,13 +59,20 @@ const createStudentIntoDB = async (
     //set  generated id
     userData.id = await generateStudentId(admissionSemester);
 
-    // upload image to cloudinary
-    const imageName = `${userData.id}${payload?.name?.firstName}`;
-    const imageUploadDetails = await sendImageToCloudinary(
-      imageName,
-      file?.path,
-    );
-    const profileImg = imageUploadDetails?.secure_url;
+    // Upload image to Cloudinary
+    if (file?.path) {
+      const imageName = `${userData.id}${payload?.name?.firstName}`;
+      const imageUploadDetails = await sendImageToCloudinary(
+        imageName,
+        file.path,
+      );
+      const profileImg = imageUploadDetails?.secure_url;
+
+      // Store the profile image URL in the payload
+      payload.profileImg = profileImg; // Cloudinary image URL
+    } else {
+      throw new Error("File not found for upload");
+    }
 
     // create a user (transaction-1)
     const newUser = await User.create([userData], { session }); // array
@@ -77,7 +84,6 @@ const createStudentIntoDB = async (
     // set id , _id as user
     payload.id = newUser[0].id;
     payload.user = newUser[0]._id; //reference _id
-    payload.profileImg = profileImg; //reference _id
 
     // create a student (transaction-2)
 
