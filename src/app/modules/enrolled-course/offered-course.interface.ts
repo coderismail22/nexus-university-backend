@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
 
-export type TDays = "A" | "B" | "C" | "D" | "F" | "NA";
+export type TGrade = "A" | "B" | "C" | "D" | "F" | "NA";
 
 export type TCourseMarks = {
   classTest1: number;
@@ -9,8 +9,17 @@ export type TCourseMarks = {
   finalTerm: number;
 };
 
-export type TEnroll = {
-  days: TDays[];
-  startTime: string;
-  endTime: string;
+export type TEnrolledCourse = {
+  semesterRegistration: Types.ObjectId;
+  academicSemester: Types.ObjectId;
+  academicFaculty: Types.ObjectId;
+  academicDepartment: Types.ObjectId;
+  offeredCourse: Types.ObjectId;
+  course: Types.ObjectId;
+  student: Types.ObjectId;
+  faculty: Types.ObjectId;
+  isEnrolled: boolean;
+  courseMarks: TCourseMarks;
+  grade: TGrade;
+  isCompleted: boolean;
 };
