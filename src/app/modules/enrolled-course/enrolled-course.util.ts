@@ -1,4 +1,4 @@
-import { TSchedule } from "./offered-course.interface";
+import { TSchedule } from "./enrolled-course.interface";
 
 export const hasTimeConflict = (
   currentAssignedSchedules: TSchedule[],
