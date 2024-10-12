@@ -18,9 +18,10 @@ const createEnrolledCourseIntoDB = async (
 ) => {
   // Steps for validations:
   /**
-   * 1. does the course exist
-   * 2. has the student already enrolled
-   * 3. create an enrolled course
+   * 1. does the course exist ok
+   * 2. has the student already enrolled ok
+   * 3. check max capacity ok
+   * 4. create an enrolled course
    */
 
   const { offeredCourse } = payload;
@@ -50,6 +51,26 @@ const createEnrolledCourseIntoDB = async (
   if (hasStudentEnrolledAlready) {
     throw new AppError(httpStatus.CONFLICT, "Student has already enrolled.");
   }
+
+  const result = await EnrolledCourse.create({
+    semesterRegistration: doesOfferedCourseExist?.semesterRegistration,
+    academicSemester: doesOfferedCourseExist?.semesterRegistration,
+    academicFaculty: doesOfferedCourseExist?.academicFaculty,
+    academicDepartment: doesOfferedCourseExist?.academicDepartment,
+    offeredCourse: offeredCourse,
+    course: doesOfferedCourseExist?.course,
+    student: student._id,
+    faculty: doesOfferedCourseExist?.faculty,
+  });
+  if (!result) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Failed to enrolled.");
+  }
+
+  const maxCapacity = doesOfferedCourseExist.maxCapacity;
+  await OfferedCourse.findByIdAndUpdate(offeredCourse, {
+    maxCapacity: maxCapacity - 1,
+  });
+  return result;
 };
 
 const getMyEnrolledCoursesFromDB = async () => {};
