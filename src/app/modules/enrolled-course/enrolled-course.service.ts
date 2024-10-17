@@ -35,6 +35,11 @@ const createEnrolledCourseIntoDB = async (
       throw new AppError(httpStatus.BAD_REQUEST, "No seats left.");
     }
 
+    // course
+    const course = await Course.findById(doesOfferedCourseExist.course).session(
+      session,
+    );
+
     // Step 3: Find the student
     const student = await User.findOne({ id: user.userId }, { _id: 1 }).session(
       session,
@@ -82,13 +87,32 @@ const createEnrolledCourseIntoDB = async (
         $group: {
           _id: null,
           totalEnrolledCredits: {
-            $sum: "$enrolledCourseData",
+            $sum: "$enrolledCourseData.credits",
           },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          totalEnrolledCredits: 1,
         },
       },
     ]);
 
     console.log(enrolledCourses);
+    const totalCredits =
+      enrolledCourses.length > 0 ? enrolledCourses[0]?.totalEnrolledCredits : 0;
+
+    if (
+      totalCredits &&
+      semesterRegistration?.maxCredit &&
+      totalCredits + course?.credits > semesterRegistration?.maxCredit
+    ) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "You have exceeded maximum number of credits.",
+      );
+    }
 
     // // Step 5: Create an enrolled course
     // const result = await EnrolledCourse.create(

@@ -14,7 +14,7 @@ const createEnrolledCourse = catchAsync(async (req, res) => {
     statusCode: httpStatus.OK,
     success: true,
     message: "Student is enrolled successfully",
-    data: result,
+    data: result, 
   });
 });
 
