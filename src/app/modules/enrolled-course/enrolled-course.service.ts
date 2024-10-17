@@ -39,6 +39,7 @@ const createEnrolledCourseIntoDB = async (
     const course = await Course.findById(doesOfferedCourseExist.course).session(
       session,
     );
+    const currentCredit = course?.credits;
 
     // Step 3: Find the student
     const student = await User.findOne({ id: user.userId }, { _id: 1 }).session(
@@ -63,6 +64,7 @@ const createEnrolledCourseIntoDB = async (
       doesOfferedCourseExist.semesterRegistration,
     ).select("maxCredit");
 
+    const maxCredit = semesterRegistration?.maxCredit;
     //total enrolled credits + new enrolled course credit >maxCredit
     // aggregation for getting the sum of enrolled courses
     const enrolledCourses = await EnrolledCourse.aggregate([
@@ -103,11 +105,7 @@ const createEnrolledCourseIntoDB = async (
     const totalCredits =
       enrolledCourses.length > 0 ? enrolledCourses[0]?.totalEnrolledCredits : 0;
 
-    if (
-      totalCredits &&
-      semesterRegistration?.maxCredit &&
-      totalCredits + course?.credits > semesterRegistration?.maxCredit
-    ) {
+    if (totalCredits && maxCredit && totalCredits + currentCredit > maxCredit) {
       throw new AppError(
         httpStatus.BAD_REQUEST,
         "You have exceeded maximum number of credits.",
