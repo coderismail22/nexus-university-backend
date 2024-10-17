@@ -12,6 +12,8 @@ import { SemesterRegistration } from "../semester-registration/semester-registra
 import { TEnrolledCourse } from "./enrolled-course.interface";
 import { JwtPayload } from "jsonwebtoken";
 import { User } from "../user/user.model";
+import { StringValidation } from "zod";
+import { calculateGradeAndPoints } from "./enrolled-course.util";
 
 const createEnrolledCourseIntoDB = async (
   user: JwtPayload,
@@ -158,7 +160,87 @@ const createEnrolledCourseIntoDB = async (
 
 const getMyEnrolledCoursesFromDB = async () => {};
 
-const updateEnrolledCourseMarksIntoDB = async () => {};
+const updateEnrolledCourseMarksIntoDB = async (
+  facultyId: string,
+  payload: Partial<TEnrolledCourse>,
+) => {
+  const { semesterRegistration, offeredCourse, student, courseMarks } = payload;
+  const doesSemesterRegistrationExist =
+    await SemesterRegistration.findById(semesterRegistration);
+  if (!doesSemesterRegistrationExist) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "Semester registration not found.",
+    );
+  }
+
+  const doesOfferedCourseExist = await OfferedCourse.findById(offeredCourse);
+  if (!doesOfferedCourseExist) {
+    throw new AppError(httpStatus.NOT_FOUND, "Offered course not found.");
+  }
+
+  console.log("student", student);
+  const doesStudentExist = await Student.findById(student);
+  if (!doesStudentExist) {
+    throw new AppError(httpStatus.NOT_FOUND, "Student not found.");
+  }
+
+  // Find the faculty id (mongodb _id)
+  const faculty = await Faculty.findOne({ id: facultyId }, { _id: 1 });
+
+  if (!faculty) {
+    throw new AppError(httpStatus.NOT_FOUND, "Faculty not found.");
+  }
+  const doesCourseBelongToFaculty = await EnrolledCourse.findOne({
+    semesterRegistration,
+    offeredCourse,
+    student,
+    faculty: faculty._id,
+  });
+
+  if (!doesCourseBelongToFaculty) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "The course does not belong to the faculty.",
+    );
+  }
+  console.log(doesCourseBelongToFaculty);
+
+  const modifiedData: Record<string, unknown> = {};
+
+  if (courseMarks?.finalTerm) {
+    const { classTest1, classTest2, midTerm, finalTerm } =
+      doesCourseBelongToFaculty.courseMarks;
+
+    const totalMarks =
+      Math.ceil(classTest1 * 0.1) +
+      Math.ceil(midTerm * 0.3) +
+      Math.ceil(classTest2 * 0.1) +
+      Math.ceil(finalTerm * 0.5);
+
+    const result = calculateGradeAndPoints(totalMarks);
+
+    modifiedData.grade = result.grade;
+    modifiedData.gradePoints = result.gradePoints;
+    modifiedData.isCompleted = true;
+  }
+
+  if (courseMarks && Object.keys(courseMarks).length) {
+    for (const [key, value] of Object.entries(courseMarks)) {
+      modifiedData[`courseMarks.${key}`] = value;
+    }
+  }
+
+  const result = await EnrolledCourse.findByIdAndUpdate(
+    doesCourseBelongToFaculty._id,
+    modifiedData,
+    {
+      new: true,
+    },
+  );
+
+  return result;
+};
 
 export const EnrolledCourseServices = {
   createEnrolledCourseIntoDB,
