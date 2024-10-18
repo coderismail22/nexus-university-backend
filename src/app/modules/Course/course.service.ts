@@ -113,6 +113,14 @@ const assignFacultiesWithCourseIntoDB = async (
   return result;
 };
 
+// Get course  with faculties
+const getCourseWithFacultyFromDB = async (courseId: string) => {
+  const result = CourseFaculty.findOne({ course: courseId }).populate(
+    "faculties",
+  );
+  return result;
+};
+
 // Remove faculties from courses
 // TODO: Understand  $in
 const removeFacultiesFromCourseFromDB = async (
@@ -123,10 +131,9 @@ const removeFacultiesFromCourseFromDB = async (
     id,
     {
       course: id,
-      $pull:{faculties:{$in:payload}}
+      $pull: { faculties: { $in: payload } },
     },
     {
-    
       new: true,
     },
   );
@@ -171,6 +178,7 @@ const deleteCourseFromDB = async (id: string) => {
 export const CourseServices = {
   createCourseIntoDB,
   assignFacultiesWithCourseIntoDB,
+  getCourseWithFacultyFromDB,
   removeFacultiesFromCourseFromDB,
   getAllCoursesFromDB,
   getSingleCourseFromDB,

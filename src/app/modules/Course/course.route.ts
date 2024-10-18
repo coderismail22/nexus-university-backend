@@ -27,9 +27,15 @@ router.patch(
 router.put(
   "/:courseId/assign-faculties",
   auth(USER_ROLE.superAdmin, USER_ROLE.admin),
-
   validateRequest(CourseValidations.facultiesWithCourseValidationSchema),
   CourseControllers.assignFacultiesWithCourseIntoDB,
+);
+
+// Get Faculties With Course
+router.get(
+  "/:courseId/get-faculties",
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin),
+  CourseControllers.getFacultiesWithCourseFromDB,
 );
 
 // Discharge Faculties From Course

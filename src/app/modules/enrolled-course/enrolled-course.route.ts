@@ -5,6 +5,7 @@ import validateRequest from "../../middlewares/validateRequest";
 import { USER_ROLE } from "../user/user.constant";
 import { EnrolledCourseValidations } from "./enrolled-course.validation";
 import { EnrolledCourseControllers } from "./enrolled-course.controller";
+import { User } from "../user/user.model";
 
 const router = express.Router();
 
@@ -19,7 +20,7 @@ router.post(
 
 router.get(
   "/my-enrolled-courses",
-  auth(USER_ROLE.student),
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.student),
   EnrolledCourseControllers.getMyEnrolledCourses,
 );
 
