@@ -41,7 +41,7 @@ const createStudentIntoDB = async (
   );
 
   if (!admissionSemester) {
-    throw new AppError(400, "Admission semester not found");
+    throw new AppError(httpStatus.NOT_FOUND, "Admission semester not found");
   }
   // find academic department info
   const academicDepartment = await AcademicDepartment.findById(
@@ -49,8 +49,10 @@ const createStudentIntoDB = async (
   );
 
   if (!academicDepartment) {
-    throw new AppError(400, "Academic department not found");
+    throw new AppError(httpStatus.NOT_FOUND, "Academic department not found");
   }
+
+  payload.academicFaculty = academicDepartment?.academicFaculty;
 
   const session = await mongoose.startSession();
 
@@ -121,7 +123,7 @@ const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
   );
 
   if (!academicDepartment) {
-    throw new AppError(400, "Academic department not found");
+    throw new AppError(httpStatus.NOT_FOUND, "Academic department not found");
   }
 
   const session = await mongoose.startSession();
