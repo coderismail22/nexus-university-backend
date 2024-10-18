@@ -6,7 +6,7 @@ import multer from "multer";
 export const sendImageToCloudinary = async (
   imageName: string,
   path: string,
-) => {
+): Promise<Record<string, unknown>> => {
   // Cloudinary configuration
   cloudinary.config({
     cloud_name: config.cloud_name,

@@ -71,7 +71,7 @@ const createStudentIntoDB = async (
       const profileImg = imageUploadDetails?.secure_url;
 
       // Store the profile image URL in the payload
-      payload.profileImg = profileImg; // Cloudinary image URL
+      payload.profileImg = profileImg as string; // Cloudinary image URL
     } else {
       throw new Error("File not found for upload");
     }
