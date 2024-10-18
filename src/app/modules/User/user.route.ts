@@ -11,9 +11,10 @@ import { USER_ROLE } from "./user.constant";
 
 const router = express.Router();
 
+// create student
 router.post(
   "/create-student",
-  auth(USER_ROLE.superAdmin,USER_ROLE.admin),
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin),
   upload.single("file"),
   (req: Request, res: Response, next: NextFunction) => {
     req.body = JSON.parse(req.body.data);
@@ -23,8 +24,15 @@ router.post(
   UserControllers.createStudent,
 );
 
+// create faculty
 router.post(
   "/create-faculty",
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin),
+  upload.single("file"),
+  (req: Request, res: Response, next: NextFunction) => {
+    req.body = JSON.parse(req.body.data);
+    next();
+  },
   validateRequest(createFacultyValidationSchema),
   UserControllers.createFaculty,
 );
@@ -42,6 +50,15 @@ router.post(
   UserControllers.changeStatus,
 );
 
-router.get("/me", auth("student", "faculty", "admin"), UserControllers.getMe);
+router.get(
+  "/me",
+  auth(
+    USER_ROLE.superAdmin,
+    USER_ROLE.admin,
+    USER_ROLE.student,
+    USER_ROLE.faculty,
+  ),
+  UserControllers.getMe,
+);
 
 export const UserRoutes = router;

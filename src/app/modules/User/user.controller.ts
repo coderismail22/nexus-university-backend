@@ -5,11 +5,15 @@ import { UserServices } from "./user.service";
 
 const createStudent = catchAsync(async (req, res) => {
   console.log("it is the file", req.file);
-  console.log("body parsed yeah", (req.body));
+  console.log("body parsed yeah", req.body);
   // console.log("it is the body yeah", JSON.parse(req.body.data));
   const { password, student: studentData } = req.body;
 
-  const result = await UserServices.createStudentIntoDB(req.file,password, studentData);
+  const result = await UserServices.createStudentIntoDB(
+    req.file,
+    password,
+    studentData,
+  );
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -20,6 +24,7 @@ const createStudent = catchAsync(async (req, res) => {
 });
 
 const createFaculty = catchAsync(async (req, res) => {
+  console.log(req.body);
   const { password, faculty: facultyData } = req.body;
 
   const result = await UserServices.createFacultyIntoDB(password, facultyData);

@@ -8,7 +8,11 @@ import { USER_ROLE } from "../user/user.constant";
 const router = express.Router();
 
 // Get All
-router.get("/", auth(USER_ROLE.admin), FacultyControllers.getAllFaculties);
+router.get(
+  "/",
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.faculty),
+  FacultyControllers.getAllFaculties,
+);
 
 // Get one
 router.get("/:id", auth(USER_ROLE.admin), FacultyControllers.getSingleFaculty);
@@ -16,12 +20,16 @@ router.get("/:id", auth(USER_ROLE.admin), FacultyControllers.getSingleFaculty);
 // Update one
 router.patch(
   "/:id",
-  auth(USER_ROLE.admin),
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin),
   validateRequest(updateFacultyValidationSchema),
   FacultyControllers.updateFaculty,
 );
 
 // Delete one
-router.delete("/:id", auth(USER_ROLE.admin), FacultyControllers.deleteFaculty);
+router.delete(
+  "/:id",
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin),
+  FacultyControllers.deleteFaculty,
+);
 
 export const FacultyRoutes = router;

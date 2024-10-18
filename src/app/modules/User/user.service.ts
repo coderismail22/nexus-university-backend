@@ -19,6 +19,7 @@ import {
 } from "./user.utils";
 import { Admin } from "../admin/admin.model";
 import { sendImageToCloudinary } from "../../utils/sendImageToCloudinary";
+import { AcademicDepartmentRoutes } from "../academicDepartment/academicDepartment.route";
 
 const createStudentIntoDB = async (
   file: any,
@@ -125,6 +126,8 @@ const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
   if (!academicDepartment) {
     throw new AppError(httpStatus.NOT_FOUND, "Academic department not found");
   }
+
+  payload.academicFaculty = academicDepartment?.academicFaculty;
 
   const session = await mongoose.startSession();
 
