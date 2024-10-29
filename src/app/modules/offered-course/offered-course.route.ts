@@ -2,6 +2,8 @@ import express from "express";
 import validateRequest from "../../middlewares/validateRequest";
 import { OfferedCourseValidations } from "./offered-course.validation";
 import { OfferedCourseControllers } from "./offered-course.controller";
+import auth from "../../middlewares/auth";
+import { USER_ROLE } from "../user/user.constant";
 const router = express.Router();
 
 // Create an offered course
@@ -22,6 +24,12 @@ router.patch(
 router.get(
   "/get-all-offered-courses",
   OfferedCourseControllers.getAllOfferedCourses,
+);
+// Get my  offered courses
+router.get(
+  "/get-my-offered-courses",
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.student),
+  OfferedCourseControllers.getMyOfferedCourseFromDB,
 );
 
 // Get a single offered course
